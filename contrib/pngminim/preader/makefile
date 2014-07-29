@@ -43,8 +43,9 @@ PNGSRC =../../..
 ZLIBSRC=$(PNGSRC)/../zlib
 PROGSRC=$(PNGSRC)/contrib/gregbook
 
-# Zlib (minimal inflate requirements - crc32 is used by libpng)
+# lzma (minimal inflate requirements - lzma_crc32 is used by libpng)
 # zutil can be eliminated if you provide your own zcalloc and zcfree
+# This has yet to be ported to LZMA
 ZSRCS  = adler32$(C) crc32$(C) \
 	 inffast$(C) inflate$(C) inftrees$(C) \
 	 zutil$(C)
@@ -52,6 +53,8 @@ ZSRCS  = adler32$(C) crc32$(C) \
 # Standard headers
 ZH     = zlib.h crc32.h inffast.h inffixed.h \
 	 inflate.h inftrees.h zutil.h
+# LZMA headers
+LZH    = lzma/check.h
 
 # Machine generated headers
 ZCONF  = zconf.h

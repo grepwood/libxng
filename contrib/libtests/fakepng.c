@@ -1,6 +1,6 @@
 /* Fake a PNG - just write it out directly. */
 #include <stdio.h>
-#include <zlib.h> /* for crc32 */
+#include <lzma/check.h> /* for crc32 */
 
 void
 put_uLong(uLong val)
@@ -20,8 +20,8 @@ put_chunk(const unsigned char *chunk, uInt length)
 
    fwrite(chunk, length, 1, stdout);
 
-   crc = crc32(0, Z_NULL, 0);
-   put_uLong(crc32(crc, chunk, length));
+   crc = lzma_crc32(NULL, 0, 0);
+   put_uLong(lzma_crc32(chunk, length, crc));
 }
 
 const unsigned char signature[] =

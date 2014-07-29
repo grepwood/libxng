@@ -55,7 +55,7 @@ void png_fixed_warning(png_const_structrp png_ptr, png_const_charp msg)
 #define png_safecat(b, sb, pos, str) (pos)
 #define png_format_number(start, end, format, number) (start)
 
-#define crc32(crc, pp, s) (crc)
+#define lzma_crc32(crc, pp, s) (crc)
 #define inflateReset(zs) Z_OK
 
 #define png_create_struct(type) (0)

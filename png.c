@@ -102,7 +102,7 @@ void /* PRIVATE */
 png_reset_crc(png_structrp png_ptr)
 {
    /* The cast is safe because the crc is a 32 bit value. */
-   png_ptr->crc = (png_uint_32)crc32(0, Z_NULL, 0);
+   png_ptr->crc = (png_uint_32)lzma_crc32(NULL, 0, 0);
 }
 
 /* Calculate the CRC over a section of data.  We can only pass as
@@ -129,7 +129,7 @@ png_calculate_crc(png_structrp png_ptr, png_const_bytep ptr, png_size_t length)
    }
 
    /* 'uLong' is defined in zlib.h as unsigned long; this means that on some
-    * systems it is a 64 bit value.  crc32, however, returns 32 bits so the
+    * systems it is a 64 bit value.  lzma_crc32, however, returns 32 bits so the
     * following cast is safe.  'uInt' may be no more than 16 bits, so it is
     * necessary to perform a loop here.
     */
@@ -143,7 +143,7 @@ png_calculate_crc(png_structrp png_ptr, png_const_bytep ptr, png_size_t length)
          if (safe_length == 0)
             safe_length = (uInt)-1; /* evil, but safe */
 
-         crc = crc32(crc, ptr, safe_length);
+         crc = lzma_crc32(ptr, safe_length, crc);
 
          /* The following should never issue compiler warnings; if they do the
           * target system has characteristics that will probably violate other
@@ -2156,7 +2156,7 @@ static const struct
    /* This data comes from contrib/tools/checksum-icc run on downloads of
     * all four ICC sRGB profiles from www.color.org.
     */
-   /* adler32, crc32, MD5[4], intent, date, length, file-name */
+   /* adler32, lzma_crc32, MD5[4], intent, date, length, file-name */
    PNG_ICC_CHECKSUM(0x0a3fd9f6, 0x3b8772b9,
       PNG_MD5(0x29f83dde, 0xaff255ae, 0x7842fae4, 0xca83390d), 0, 0,
       "2009/03/27 21:36:31", 3048, "sRGB_IEC61966-2-1_black_scaled.icc")
@@ -2262,13 +2262,13 @@ png_compare_ICC_profile_with_sRGB(png_const_structrp png_ptr,
             {
                /* These basic checks suggest that the data has not been
                 * modified, but if the check level is more than 1 perform
-                * our own crc32 checksum on the data.
+                * our own lzma_crc32 checksum on the data.
                 */
 #              if PNG_sRGB_PROFILE_CHECKS > 1
                   if (crc == 0)
                   {
-                     crc = crc32(0, NULL, 0);
-                     crc = crc32(crc, profile, length);
+                     crc = lzma_crc32(NULL, 0, 0);
+                     crc = lzma_crc32(profile, length, crc);
                   }
 
                   /* So this check must pass for the 'return' below to happen.

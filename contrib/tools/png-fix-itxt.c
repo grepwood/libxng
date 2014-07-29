@@ -20,9 +20,9 @@
  * PNG file that has no iTXt chunks or one that has valid iTXt chunks;
  * such files will simply be copied.
  *
- * Requires zlib (for crc32 and Z_NULL); build with
+ * Requires lzma (for lzma_crc32); build with
  *
- *     gcc -O -o png-fix-itxt png-fix-itxt.c -lz
+ *     gcc -O -o png-fix-itxt png-fix-itxt.c -llzma
  *
  * If you need to handle iTXt chunks larger than 500000 kbytes you must
  * rebuild png-fix-itxt with a larger values of MAX_LENGTH (or a smaller value
@@ -30,7 +30,7 @@
  */
 
 #include <stdio.h>
-#include <zlib.h>
+#include <lzma/check.h>
 
 #define MAX_LENGTH 500000
 
@@ -76,7 +76,7 @@ for (;;)
          break;  /* To do: handle this more gracefully */
 
       /* Initialize the CRC */
-      crc = crc32(0, Z_NULL, 0);
+      crc = lzma_crc32(NULL, 0, 0);
 
       /* Copy the data bytes */
       for (i=8; i < length + 12; i++)
@@ -85,7 +85,7 @@ for (;;)
       }
 
       /* Calculate the CRC */
-      crc = crc32(crc, buf+4, (uInt)length+4);
+      crc = lzma_crc32(buf+4, (uInt)length+4, crc);
 
       for (;;)
       {
@@ -105,7 +105,7 @@ for (;;)
         buf[length+11]=c;
 
         /* Update the CRC */
-        crc = crc32(crc, buf+7+length, 1);
+        crc = lzma_crc32(buf+7+length, 1, crc);
       }
 
       /* Update length bytes */

@@ -8,19 +8,20 @@
  * For conditions of distribution and use, see the disclaimer
  * and license in png.h
  *
- * Generate crc32 and adler32 checksums of the given input files, used to
+ * Generate lzma_crc32 and adler32 checksums of the given input files, used to
  * generate check-codes for use when matching ICC profiles within libpng.
  */
 #include <stdio.h>
 
 #include <zlib.h>
+#include <lzma/lzma.h>
 
 static int
 read_one_file(FILE *ip, const char *name)
 {
    uLong length = 0;
    uLong a32 = adler32(0, NULL, 0);
-   uLong c32 = crc32(0, NULL, 0);
+   uLong c32 = lzma_crc32(NULL, 0, 0);
    Byte header[132];
 
    for (;;)
@@ -37,7 +38,7 @@ read_one_file(FILE *ip, const char *name)
 
       ++length;
       a32 = adler32(a32, &b, 1);
-      c32 = crc32(c32, &b, 1);
+      c32 = lzma_crc32(&b, 1, c32);
    }
 
    if (ferror(ip))
@@ -65,7 +66,7 @@ int main(int argc, char **argv)
 {
    int err = 0;
 
-   printf("/* adler32, crc32, MD5[16], intent, date, length, file-name */\n");
+   puts("/* adler32, lzma_crc32, MD5[16], intent, date, length, file-name */");
 
    if (argc > 1)
    {
