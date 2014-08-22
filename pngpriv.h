@@ -1522,7 +1522,7 @@ PNG_INTERNAL_FUNCTION(void,png_icc_set_sRGB,(
    /* 'adler' is the Adler32 checksum of the uncompressed profile data. It may
     * be zero to indicate that it is not available.  It is used, if provided,
     * as a fast check on the profile when checking to see if it is sRGB.
-    */
+    * In XNG, it is replaced by Dec32. */
 #endif
 #endif /* iCCP */
 

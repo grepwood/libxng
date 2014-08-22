@@ -410,9 +410,10 @@ png_deflate_claim(png_structrp png_ptr, png_uint_32 owner,
       /* Now initialize if required, setting the new parameters, otherwise just
        * to a simple reset to the previous parameters.
        */
-      if (png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED)
-         ret = deflateReset(&png_ptr->zstream);
-
+      if (png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) {
+/*         ret = deflateReset(&png_ptr->zstream);*/
+        ret = lzma_end(&png_ptr->zstream);
+      }
       else
       {
          ret = deflateInit2(&png_ptr->zstream, level, method, windowBits,

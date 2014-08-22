@@ -8,7 +8,7 @@
  * For conditions of distribution and use, see the disclaimer
  * and license in png.h
  *
- * Generate lzma_crc32 and adler32 checksums of the given input files, used to
+ * Generate lzma_crc32 and dec32 checksums of the given input files, used to
  * generate check-codes for use when matching ICC profiles within libpng.
  */
 #include <stdio.h>
@@ -20,7 +20,7 @@ static int
 read_one_file(FILE *ip, const char *name)
 {
    uLong length = 0;
-   uLong a32 = adler32(0, NULL, 0);
+   uLong d32 = dec32(NULL, 0);
    uLong c32 = lzma_crc32(NULL, 0, 0);
    Byte header[132];
 
@@ -37,7 +37,7 @@ read_one_file(FILE *ip, const char *name)
          header[length] = b;
 
       ++length;
-      a32 = adler32(a32, &b, 1);
+      d32 = dec32(&b, 1);
       c32 = lzma_crc32(&b, 1, c32);
    }
 
@@ -49,7 +49,7 @@ read_one_file(FILE *ip, const char *name)
       "0x%2.2x%2.2x%2.2x%2.2x, 0x%2.2x%2.2x%2.2x%2.2x, 0x%2.2x%2.2x%2.2x%2.2x,"
       " 0x%2.2x%2.2x%2.2x%2.2x), %d,\n"
       "   \"%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%2.2d\", %lu, \"%s\")\n",
-      (unsigned long)a32, (unsigned long)c32,
+      (unsigned long)d32, (unsigned long)c32,
       header[84], header[85], header[86], header[87],
       header[88], header[89], header[90], header[91],
       header[92], header[93], header[94], header[95],
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 {
    int err = 0;
 
-   puts("/* adler32, lzma_crc32, MD5[16], intent, date, length, file-name */");
+   puts("/* dec32, lzma_crc32, MD5[16], intent, date, length, file-name */");
 
    if (argc > 1)
    {

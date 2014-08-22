@@ -2156,7 +2156,7 @@ static const struct
    /* This data comes from contrib/tools/checksum-icc run on downloads of
     * all four ICC sRGB profiles from www.color.org.
     */
-   /* adler32, lzma_crc32, MD5[4], intent, date, length, file-name */
+   /* dec32, lzma_crc32, MD5[4], intent, date, length, file-name */
    PNG_ICC_CHECKSUM(0x0a3fd9f6, 0x3b8772b9,
       PNG_MD5(0x29f83dde, 0xaff255ae, 0x7842fae4, 0xca83390d), 0, 0,
       "2009/03/27 21:36:31", 3048, "sRGB_IEC61966-2-1_black_scaled.icc")
@@ -2232,7 +2232,7 @@ png_compare_ICC_profile_with_sRGB(png_const_structrp png_ptr,
          png_get_uint_32(profile+96) == png_sRGB_checks[i].md5[3])
       {
          /* This may be one of the old HP profiles without an MD5, in that
-          * case we can only use the length and Adler32 (note that these
+          * case we can only use the length and Dec32 (note that these
           * are not used by default if there is an MD5!)
           */
 #        if PNG_sRGB_PROFILE_CHECKS == 0
@@ -2251,11 +2251,10 @@ png_compare_ICC_profile_with_sRGB(png_const_structrp png_ptr,
          if (length == png_sRGB_checks[i].length &&
             intent == png_sRGB_checks[i].intent)
          {
-            /* Now calculate the adler32 if not done already. */
-            if (adler == 0)
+            /* Now calculate the dec32 if not done already. */
+            if (!adler)
             {
-               adler = adler32(0, NULL, 0);
-               adler = adler32(adler, profile, length);
+               adler = dec32(profile, length);
             }
 
             if (adler == png_sRGB_checks[i].adler)
@@ -2265,7 +2264,7 @@ png_compare_ICC_profile_with_sRGB(png_const_structrp png_ptr,
                 * our own lzma_crc32 checksum on the data.
                 */
 #              if PNG_sRGB_PROFILE_CHECKS > 1
-                  if (crc == 0)
+                  if (!crc)
                   {
                      crc = lzma_crc32(NULL, 0, 0);
                      crc = lzma_crc32(profile, length, crc);
